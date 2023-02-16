@@ -108,13 +108,14 @@ const RegistrationScreen = () => {
 
 const styles = StyleSheet.create({
   container: {
+    position: "relative",
     flex: 1,
     justifyContent: "flex-end",
   },
   image: {
     position: "absolute",
     bottom: 0,
-    flex: 1,
+
     resizeMode: "cover",
     justifyContent: "center",
     width: "100%",

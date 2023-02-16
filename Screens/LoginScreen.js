@@ -21,15 +21,15 @@ const initialState = {
 };
 
 const LoginScreen = () => {
-  // const [state, setstate] = useState(initialState);
-  // const onLogin = () => {
-  //   Alert.alert("Credentials", `Your email: ${state.email}`);
-  //   console.log(state);
-  // };
+  const [state, setstate] = useState(initialState);
+  const onLogin = () => {
+    Alert.alert("Credentials", `Your email: ${state.email}`);
+    console.log(state);
+  };
 
   return (
     <View style={styles.container}>
-      {/* <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
         <ImageBackground
           style={styles.image}
           source={require("../images/Photo-BG.jpg")}
@@ -83,64 +83,64 @@ const LoginScreen = () => {
             </View>
           </KeyboardAvoidingView>
         </ImageBackground>
-      </TouchableWithoutFeedback> */}
+      </TouchableWithoutFeedback>
     </View>
   );
 };
 
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//   },
-//   image: {
-//     flex: 1,
-//     resizeMode: "cover",
-//     justifyContent: "flex-end",
-//     width: "100%",
-//     height: "100%",
-//   },
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  image: {
+    flex: 1,
+    resizeMode: "cover",
+    justifyContent: "flex-end",
+    width: "100%",
+    height: "100%",
+  },
 
-//   input: {
-//     borderWidth: 1,
-//     borderColor: "#E8E8E8",
-//     height: 50,
-//     borderRadius: 8,
-//     paddingLeft: 16,
-//     fontSize: 16,
-//     backgroundColor: "#F6F6F6",
-//   },
-//   form: {
-//     paddingTop: 92,
-//     borderTopLeftRadius: 25,
-//     borderTopRightRadius: 25,
-//     paddingHorizontal: 16,
-//     backgroundColor: "#fff",
-//     paddingBottom: 78,
-//     zIndex: 999,
-//   },
-//   formTitle: {
-//     marginBottom: 33,
-//     fontSize: 30,
-//     textAlign: "center",
-//   },
-//   btn: {
-//     backgroundColor: "#FF6C00",
-//     height: 51,
-//     borderRadius: 100,
-//     marginTop: 43,
-//     justifyContent: "center",
-//     alignItems: "center",
-//   },
-//   btnTitle: {
-//     color: "#ffff",
-//     fontSize: 16,
-//   },
-//   msg: {
-//     textAlign: "center",
-//     fontSize: 16,
-//     backgroundColor: "#fff",
-//     marginTop: 16,
-//   },
-// });
+  input: {
+    borderWidth: 1,
+    borderColor: "#E8E8E8",
+    height: 50,
+    borderRadius: 8,
+    paddingLeft: 16,
+    fontSize: 16,
+    backgroundColor: "#F6F6F6",
+  },
+  form: {
+    paddingTop: 92,
+    borderTopLeftRadius: 25,
+    borderTopRightRadius: 25,
+    paddingHorizontal: 16,
+    backgroundColor: "#fff",
+    paddingBottom: 78,
+    zIndex: 999,
+  },
+  formTitle: {
+    marginBottom: 33,
+    fontSize: 30,
+    textAlign: "center",
+  },
+  btn: {
+    backgroundColor: "#FF6C00",
+    height: 51,
+    borderRadius: 100,
+    marginTop: 43,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  btnTitle: {
+    color: "#ffff",
+    fontSize: 16,
+  },
+  msg: {
+    textAlign: "center",
+    fontSize: 16,
+    backgroundColor: "#fff",
+    marginTop: 16,
+  },
+});
 
 export default LoginScreen;
