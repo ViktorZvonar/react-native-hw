@@ -1,6 +1,6 @@
 import {
   Alert,
-  ImageBackground,
+  Image,
   StyleSheet,
   Text,
   View,
@@ -22,7 +22,7 @@ const initialState = {
 };
 
 const RegistrationScreen = () => {
-  // const [isShowKeyboard, setIsShowKeyboard] = useState(false);
+  const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const [state, setstate] = useState(initialState);
   const onLogin = () => {
     Alert.alert(
@@ -34,73 +34,73 @@ const RegistrationScreen = () => {
 
   return (
     <View style={styles.container}>
+      <Image
+        style={styles.image}
+        source={require("../images/Photo-BG.jpg")}
+      ></Image>
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <ImageBackground
-          style={styles.image}
-          source={require("../images/Photo-BG.jpg")}
+        <KeyboardAvoidingView
+          behavior={Platform.OS === "ios" ? "padding" : "height"}
         >
-          <KeyboardAvoidingView
-            behavior={Platform.OS === "ios" ? "padding" : "height"}
+          <View
+            style={{
+              ...styles.form,
+              marginBottom: isShowKeyboard ? 0 : 32,
+            }}
+            // style={styles.form}
           >
-            <View
-              // style={{
-              //   ...styles.form,
-              //   marginBottom: isShowKeyboard ? 0 : 32,
-              // }}
-              style={styles.form}
-            >
-              <Text style={styles.formTitle}>Registration</Text>
-              <View>
-                <TextInput
-                  style={styles.input}
-                  placeholder={"Login"}
-                  // onFocus={() => {
-                  //   setIsShowKeyboard(true);
-                  // }}
-                  value={state.login}
-                  onChangeText={(value) =>
-                    setstate((prevState) => ({ ...prevState, login: value }))
-                  }
-                />
-              </View>
-              <View style={{ marginTop: 16 }}>
-                <TextInput
-                  style={styles.input}
-                  placeholder={"Email"}
-                  value={state.email}
-                  onChangeText={(value) =>
-                    setstate((prevState) => ({ ...prevState, email: value }))
-                  }
-                  // onFocus={() => {
-                  //   setIsShowKeyboard(true);
-                  // }}
-                />
-              </View>
-              <View style={{ marginTop: 16 }}>
-                <TextInput
-                  style={styles.input}
-                  placeholder={"Password"}
-                  value={state.password}
-                  onChangeText={(value) =>
-                    setstate((prevState) => ({ ...prevState, password: value }))
-                  }
-                  secureTextEntry={true}
-                  // onFocus={() => {
-                  //   setIsShowKeyboard(true);
-                  // }}
-                />
-              </View>
-              <TouchableOpacity
-                activeOpacity={0.8}
-                style={styles.btn}
-                onPress={onLogin}
-              >
-                <Text style={styles.btnTitle}>Register</Text>
-              </TouchableOpacity>
-              <Text style={styles.msg}>Have an account? Log in</Text>
+            <Text style={styles.formTitle}>Registration</Text>
+            <View>
+              <TextInput
+                style={styles.input}
+                placeholder={"Login"}
+                onFocus={() => {
+                  setIsShowKeyboard(true);
+                  console.log("hello");
+                }}
+                value={state.login}
+                onChangeText={(value) =>
+                  setstate((prevState) => ({ ...prevState, login: value }))
+                }
+              />
             </View>
-          </KeyboardAvoidingView>
-        </ImageBackground>
+            <View style={{ marginTop: 16 }}>
+              <TextInput
+                style={styles.input}
+                placeholder={"Email"}
+                value={state.email}
+                onChangeText={(value) =>
+                  setstate((prevState) => ({ ...prevState, email: value }))
+                }
+                // onFocus={() => {
+                //   setIsShowKeyboard(true);
+                // }}
+              />
+            </View>
+            <View style={{ marginTop: 16 }}>
+              <TextInput
+                style={styles.input}
+                placeholder={"Password"}
+                value={state.password}
+                onChangeText={(value) =>
+                  setstate((prevState) => ({ ...prevState, password: value }))
+                }
+                secureTextEntry={true}
+                // onFocus={() => {
+                //   setIsShowKeyboard(true);
+                // }}
+              />
+            </View>
+            <TouchableOpacity
+              activeOpacity={0.8}
+              style={styles.btn}
+              onPress={onLogin}
+            >
+              <Text style={styles.btnTitle}>Register</Text>
+            </TouchableOpacity>
+            <Text style={styles.msg}>Have an account? Log in</Text>
+          </View>
+        </KeyboardAvoidingView>
       </TouchableWithoutFeedback>
     </View>
   );
@@ -109,11 +109,14 @@ const RegistrationScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    justifyContent: "flex-end",
   },
   image: {
+    position: "absolute",
+    bottom: 0,
     flex: 1,
     resizeMode: "cover",
-    justifyContent: "flex-end",
+    justifyContent: "center",
     width: "100%",
     height: "100%",
   },
@@ -134,7 +137,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     backgroundColor: "#fff",
     paddingBottom: 78,
-    zIndex: 999,
   },
   formTitle: {
     marginBottom: 33,
