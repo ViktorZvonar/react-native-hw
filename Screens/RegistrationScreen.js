@@ -8,6 +8,7 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
   TouchableOpacity,
+  Button,
 } from "react-native";
 
 import { useState } from "react";
@@ -36,20 +37,31 @@ const RegistrationScreen = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <Image style={styles.image} source={require("../images/Photo-BG.jpg")} />
-      <TouchableWithoutFeedback onPress={keyboardHide}>
+    <TouchableWithoutFeedback onPress={keyboardHide}>
+      <View style={styles.container}>
+        <Image
+          style={styles.image}
+          source={require("../images/Photo-BG.jpg")}
+        />
+
         <View
           style={{ ...styles.form, paddingBottom: isShowKeyboard ? 32 : 78 }}
         >
+          <View style={styles.photoWrapper}></View>
+          <TouchableOpacity activeOpacity={0.8} style={styles.addBtn}>
+            <Text style={styles.addBtnTitle}>+</Text>
+          </TouchableOpacity>
           <Text style={styles.formTitle}>Registration</Text>
           <View>
             <TextInput
-              style={styles.input}
+              style={{
+                ...styles.input,
+                borderColor: isShowKeyboard ? "#FF6C00" : "#E8E8E8",
+                backgroundColor: isShowKeyboard ? "#FFFFFF" : "#F6F6F6",
+              }}
               placeholder={"Login"}
               onFocus={() => {
                 setIsShowKeyboard(true);
-                console.log(isShowKeyboard);
               }}
               onBlur={() => setIsShowKeyboard(false)}
               value={state.login}
@@ -60,7 +72,11 @@ const RegistrationScreen = () => {
           </View>
           <View style={{ marginTop: 16 }}>
             <TextInput
-              style={styles.input}
+              style={{
+                ...styles.input,
+                borderColor: isShowKeyboard ? "#FF6C00" : "#E8E8E8",
+                backgroundColor: isShowKeyboard ? "#FFFFFF" : "#F6F6F6",
+              }}
               placeholder={"Email"}
               value={state.email}
               onChangeText={(value) =>
@@ -71,8 +87,16 @@ const RegistrationScreen = () => {
             />
           </View>
           <View style={{ marginTop: 16 }}>
+            <TouchableOpacity activeOpacity={0.8} style={styles.showBtn}>
+              <Text style={styles.showBtnTitle}>Show</Text>
+            </TouchableOpacity>
+
             <TextInput
-              style={styles.input}
+              style={{
+                ...styles.input,
+                borderColor: isShowKeyboard ? "#FF6C00" : "#E8E8E8",
+                backgroundColor: isShowKeyboard ? "#FFFFFF" : "#F6F6F6",
+              }}
               placeholder={"Password"}
               value={state.password}
               onChangeText={(value) =>
@@ -98,8 +122,8 @@ const RegistrationScreen = () => {
             <Text style={styles.msg}>Have an account? Log in</Text>
           )}
         </View>
-      </TouchableWithoutFeedback>
-    </View>
+      </View>
+    </TouchableWithoutFeedback>
   );
 };
 
@@ -117,15 +141,58 @@ const styles = StyleSheet.create({
   },
 
   input: {
+    position: "relative",
     borderWidth: 1,
-    borderColor: "#E8E8E8",
     height: 50,
     borderRadius: 8,
     paddingLeft: 16,
     fontSize: 16,
-    backgroundColor: "#F6F6F6",
   },
+  showBtn: {
+    position: "absolute",
+    zIndex: 999,
+    alignSelf: "center",
+    top: 15,
+    right: 15,
+    backgroundColor: "transparent",
+  },
+  showBtnTitle: {
+    color: "#1B4371",
+    fontSize: 16,
+  },
+
+  addBtn: {
+    position: "absolute",
+    zIndex: 999,
+
+    top: 21,
+    right: 125,
+    width: 25,
+    height: 25,
+    borderWidth: 1,
+    borderRadius: 25,
+    borderColor: "#FF6C00",
+    backgroundColor: "#FFFF",
+  },
+  addBtnTitle: {
+    color: "#FF6C00",
+    textAlign: "center",
+  },
+
+  photoWrapper: {
+    position: "absolute",
+    width: 120,
+    height: 120,
+
+    top: -60,
+    alignSelf: "center",
+
+    backgroundColor: "#F6F6F6",
+    borderRadius: 16,
+  },
+
   form: {
+    position: "relative",
     paddingTop: 92,
     borderTopLeftRadius: 25,
     borderTopRightRadius: 25,
@@ -136,6 +203,7 @@ const styles = StyleSheet.create({
     marginBottom: 33,
     fontSize: 30,
     marginHorizontal: 95,
+    fontWeight: "500",
   },
   btn: {
     backgroundColor: "#FF6C00",
