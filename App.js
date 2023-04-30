@@ -7,9 +7,9 @@ import BottomTabNavigator from "./Screens/Home";
 
 const MainStack = createStackNavigator();
 
-export default function App() {
-  return (
-    <NavigationContainer>
+const useRoute = (isAuth) => {
+  if (!isAuth) {
+    return (
       <MainStack.Navigator initialRouteName="Registration">
         <MainStack.Screen
           options={{
@@ -25,14 +25,24 @@ export default function App() {
           name="Login"
           component={LoginScreen}
         />
-        <MainStack.Screen
-          options={{
-            headerShown: false,
-          }}
-          name="Home"
-          component={BottomTabNavigator}
-        />
       </MainStack.Navigator>
-    </NavigationContainer>
+    );
+  }
+  return (
+    <MainStack.Navigator>
+      <MainStack.Screen
+        options={{
+          headerShown: false,
+        }}
+        name="Home"
+        component={BottomTabNavigator}
+      />
+    </MainStack.Navigator>
   );
+};
+
+const routing = useRoute(null);
+
+export default function App() {
+  return <NavigationContainer>{routing}</NavigationContainer>;
 }
