@@ -20,20 +20,23 @@ const initialState = {
   password: "",
 };
 
-const RegistrationScreen = () => {
+const RegistrationScreen = ({ navigation }) => {
   const [state, setstate] = useState(initialState);
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
+
   const onLogin = () => {
-    Alert.alert(
-      "Credentials",
-      `Your login: ${state.login}, your email: ${state.email}`
-    );
-    console.log(state);
+    const isLoginSuccessful = true;
+    if (isLoginSuccessful) {
+      navigation.navigate("Home");
+    } else {
+      Alert.alert("Credentials", `Your email: ${state.email}`);
+      console.log(state);
+    }
   };
 
   const keyboardHide = () => {
-    setIsShowKeyboard(false);
     Keyboard.dismiss();
+    setIsShowKeyboard(false);
   };
 
   return (
@@ -41,7 +44,7 @@ const RegistrationScreen = () => {
       <View style={styles.container}>
         <Image
           style={styles.image}
-          source={require("../images/Photo-BG.jpg")}
+          source={require("../../images/Photo-BG.jpg")}
         />
 
         <View
@@ -119,7 +122,12 @@ const RegistrationScreen = () => {
             </TouchableOpacity>
           )}
           {!isShowKeyboard && (
-            <Text style={styles.msg}>Have an account? Log in</Text>
+            <TouchableOpacity onPress={() => navigation.navigate("Login")}>
+              <Text style={styles.msg}>
+                Have an account?{" "}
+                <Text style={{ ...styles.msg, paddingLeft: 5 }}>Log in</Text>
+              </Text>
+            </TouchableOpacity>
           )}
         </View>
       </View>

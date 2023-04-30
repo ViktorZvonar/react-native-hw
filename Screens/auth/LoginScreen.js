@@ -7,6 +7,7 @@ import {
   TextInput,
   TouchableWithoutFeedback,
   Keyboard,
+  Button,
   TouchableOpacity,
 } from "react-native";
 
@@ -18,12 +19,17 @@ const initialState = {
   password: "",
 };
 
-const LoginScreen = () => {
+const LoginScreen = ({ navigation }) => {
   const [state, setstate] = useState(initialState);
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
   const onLogin = () => {
-    Alert.alert("Credentials", `Your email: ${state.email}`);
-    console.log(state);
+    const isLoginSuccessful = true;
+    if (isLoginSuccessful) {
+      navigation.navigate("Home");
+    } else {
+      Alert.alert("Credentials", `Your email: ${state.email}`);
+      console.log(state);
+    }
   };
 
   const keyboardHide = () => {
@@ -36,7 +42,7 @@ const LoginScreen = () => {
       <View style={styles.container}>
         <Image
           style={styles.image}
-          source={require("../images/Photo-BG.jpg")}
+          source={require("../../images/Photo-BG.jpg")}
         />
 
         <View
@@ -45,7 +51,7 @@ const LoginScreen = () => {
           <View style={styles.photoWrapper}>
             <Image
               style={styles.addedFoto}
-              source={require("../images/Rectangle22.jpg")}
+              source={require("../../images/Rectangle22.jpg")}
             />
           </View>
           <TouchableOpacity activeOpacity={0.8} style={styles.addBtn}>
@@ -103,7 +109,14 @@ const LoginScreen = () => {
             </TouchableOpacity>
           )}
           {!isShowKeyboard && (
-            <Text style={styles.msg}>Have an account? Log in</Text>
+            <TouchableOpacity
+              onPress={() => navigation.navigate("Registration")}
+            >
+              <Text style={styles.msg}>
+                No account?{" "}
+                <Text style={{ ...styles.msg, marginLeft: 5 }}>Register</Text>
+              </Text>
+            </TouchableOpacity>
           )}
         </View>
       </View>
