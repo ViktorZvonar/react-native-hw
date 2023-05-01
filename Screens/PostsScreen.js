@@ -1,8 +1,22 @@
-import React from "react";
-import { Text, View, TouchableOpacity, Image, StyleSheet } from "react-native";
+import React, { useState, useEffect } from "react";
+import {
+  Text,
+  View,
+  TouchableOpacity,
+  Image,
+  StyleSheet,
+  FlatList,
+} from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
-export default function PostsScreen({ navigation }) {
+export default function PostsScreen({ navigation, route }) {
+  const [posts, setPosts] = useState([]);
+  useEffect(() => {
+    if (route.params) {
+      setPosts((prevState) => [...prevState, route.params]);
+    }
+  }, [route.params]);
+
   React.useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
@@ -20,25 +34,45 @@ export default function PostsScreen({ navigation }) {
 
   return (
     <View style={styles.container}>
-      <Image
-        source={require("../images/Rectangle22.jpg")}
-        style={styles.userPhoto}
+      <View style={styles.userContainer}>
+        <Image
+          source={require("../images/Rectangle22.jpg")}
+          style={styles.userPhoto}
+        />
+        <Text style={[styles.textContainer, { flex: 1 }]}>
+          <Text style={styles.userName}>Natali Romanova</Text>
+          {"\n"}
+          <Text style={styles.userEmail}>email@example.com</Text>
+        </Text>
+      </View>
+
+      <FlatList
+        data={posts}
+        keyExtractor={(item, index) => index.toString()}
+        renderItem={({ item }) => (
+          <View style={styles.flatContainer}>
+            <Image source={{ uri: item.uri }} />
+          </View>
+        )}
       />
-      <Text style={[styles.textContainer, { flex: 1 }]}>
-        <Text style={styles.userName}>Natali Romanova</Text>
-        {"\n"}
-        <Text style={styles.userEmail}>email@example.com</Text>
-      </Text>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  container: { paddingVertical: 32, paddingHorizontal: 16 },
+  userContainer: {
     flexDirection: "row",
     alignItems: "center",
-    marginLeft: 16,
+  },
+
+  flatContainer: {
     marginTop: 32,
+    width: "100%",
+    height: 240,
+    borderRadius: 8,
+    overflow: "hidden",
+    borderWidth: 1,
   },
 
   textContainer: {
