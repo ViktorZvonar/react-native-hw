@@ -1,25 +1,28 @@
-import React, { useState, useEffect, useRef } from "react";
-import { View, Text, StyleSheet, Image } from "react-native";
+import React, { useState, useEffect } from "react";
+import { View, Text, StyleSheet } from "react-native";
 import { Camera } from "expo-camera";
 import { Icon } from "react-native-elements";
-import { useFocusEffect } from "@react-navigation/native";
 import * as MediaLibrary from "expo-media-library";
 import { TouchableOpacity } from "react-native-gesture-handler";
+import * as Location from "expo-location";
 
 export default function CreatePostsScreen({ navigation }) {
   const [hasPermission, setHasPermission] = useState(null);
   const [hasMediaLibraryPermission, setHasMediaLibraryPermission] =
     useState(null);
+  const [hasLocationPermission, setHasLocationPermission] = useState(null);
   const [cameraRef, setCameraRef] = useState(null);
-
   const [photo, setPhoto] = useState(null);
+  const [location, setLocation] = useState(null);
 
   useEffect(() => {
     (async () => {
       const { status } = await Camera.requestCameraPermissionsAsync();
       const { status: mediaLibraryStatus } =
         await MediaLibrary.requestPermissionsAsync();
-
+      const { status: locationStatus } =
+        await Location.requestForegroundPermissionsAsync();
+      setHasLocationPermission(locationStatus === "granted");
       setHasPermission(status === "granted");
       setHasMediaLibraryPermission(mediaLibraryStatus === "granted");
     })();
@@ -40,8 +43,22 @@ export default function CreatePostsScreen({ navigation }) {
     setPhoto(photo.uri);
   };
 
-  const publishPicture = () => {
-    navigation.navigate("Posts", { photo });
+  const publishPicture = async () => {
+    if (hasLocationPermission) {
+      const location = await Location.getCurrentPositionAsync({});
+      const coords = {
+        latitude: location.coords.latitude,
+        longitude: location.coords.longitude,
+      };
+      setLocation(coords);
+      console.log(location);
+
+      navigation.navigate("Posts", { photo, location });
+    } else {
+      alert(
+        "Location not available. Please ensure location permissions are granted and try again."
+      );
+    }
   };
 
   return (
@@ -52,13 +69,7 @@ export default function CreatePostsScreen({ navigation }) {
           ref={(ref) => {
             setCameraRef(ref);
           }}
-          onCameraReady={() => {
-            setCameraReady(true);
-          }}
         >
-          {/* <View style={styles.takenPhotoContainer}>
-            <Image source={{ uri: photo, height: 200, width: 200 }} />
-          </View> */}
           <TouchableOpacity onPress={takePicture} style={styles.snapContainer}>
             <Text style={styles.snap}>
               <Icon name="camera" type="font-awesome" color="#fff" size={20} />
@@ -114,16 +125,5 @@ const styles = StyleSheet.create({
   },
   publishButtonText: {
     color: "#fff",
-  },
-  takenPhotoContainer: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    borderWidth: 1,
-    alignItems: "center",
-    justifyContent: "center",
-    borderColor: "#ff0000",
   },
 });
