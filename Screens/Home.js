@@ -4,6 +4,11 @@ import { Ionicons } from "@expo/vector-icons";
 import { MaterialIcons } from "@expo/vector-icons";
 import { View, TouchableOpacity } from "react-native";
 
+import { createStackNavigator } from "@react-navigation/stack";
+
+import CommentsScreen from "./CommentsScreen";
+import MapScreen from "./MapScreen";
+
 import PostsScreen from "./PostsScreen";
 import CreatePostsScreen from "./CreatePostsScreen";
 import ProfileScreen from "./ProfileScreen";
@@ -114,13 +119,39 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
   );
 };
 
+const PostsStack = createStackNavigator();
+
+function PostsStackScreen() {
+  return (
+    <PostsStack.Navigator>
+      <PostsStack.Screen
+        name="Posts"
+        component={PostsScreen}
+        options={{ headerTitleAlign: "center" }}
+      />
+      <PostsStack.Screen
+        name="CommentsScreen"
+        component={CommentsScreen}
+        options={{ headerTitleAlign: "center" }}
+      />
+      <PostsStack.Screen
+        name="MapScreen"
+        component={MapScreen}
+        options={{ headerTitleAlign: "center" }}
+      />
+    </PostsStack.Navigator>
+  );
+}
+
 function BottomTabNavigator() {
   return (
     <BottomTab.Navigator tabBar={(props) => <CustomTabBar {...props} />}>
       <BottomTab.Screen
-        name="Posts"
-        component={PostsScreen}
-        options={{ headerTitleAlign: "center" }}
+        name="PostsStack"
+        component={PostsStackScreen}
+        options={{
+          headerShown: false,
+        }}
       />
       <BottomTab.Screen
         name="Create Posts"
