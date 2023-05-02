@@ -8,29 +8,22 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 
 export default function CreatePostsScreen({ navigation }) {
   const [hasPermission, setHasPermission] = useState(null);
+  const [hasMediaLibraryPermission, setHasMediaLibraryPermission] =
+    useState(null);
   const [cameraRef, setCameraRef] = useState(null);
-  const [type, setType] = useState(Camera.Constants.Type.back);
-  const [cameraReady, setCameraReady] = useState(false);
-  const [photo, setPhoto] = useState("");
+
+  const [photo, setPhoto] = useState(null);
 
   useEffect(() => {
     (async () => {
       const { status } = await Camera.requestCameraPermissionsAsync();
-      await MediaLibrary.requestPermissionsAsync();
+      const { status: mediaLibraryStatus } =
+        await MediaLibrary.requestPermissionsAsync();
 
       setHasPermission(status === "granted");
+      setHasMediaLibraryPermission(mediaLibraryStatus === "granted");
     })();
   }, []);
-
-  useFocusEffect(
-    React.useCallback(() => {
-      setCameraReady(false);
-
-      return () => {
-        setCameraReady(false);
-      };
-    }, [])
-  );
 
   if (hasPermission === null) {
     return <View />;
@@ -40,14 +33,11 @@ export default function CreatePostsScreen({ navigation }) {
   }
 
   const takePicture = async () => {
-    if (!cameraReady) {
-      return;
-    }
-    if (cameraRef) {
-      const { uri } = await cameraRef.takePictureAsync();
-      await MediaLibrary.createAssetAsync(uri);
-      setPhoto(uri);
-    }
+    console.log("Taking picture...");
+    const photo = await cameraRef.takePictureAsync();
+    console.log("Photo taken:", photo.uri);
+    await MediaLibrary.createAssetAsync(photo.uri);
+    setPhoto(photo.uri);
   };
 
   const publishPicture = () => {
@@ -59,7 +49,6 @@ export default function CreatePostsScreen({ navigation }) {
       <View style={styles.cameraWrapper}>
         <Camera
           style={styles.camera}
-          type={type}
           ref={(ref) => {
             setCameraRef(ref);
           }}
@@ -67,18 +56,9 @@ export default function CreatePostsScreen({ navigation }) {
             setCameraReady(true);
           }}
         >
-          {/* {photo && (
-            <View style={styles.takenPhotoContainer}>
-              <Image
-                source={{ uri: photo }}
-                style={{
-                  height: "100%",
-                  width: "100%",
-                  resizeMode: "contain",
-                }}
-              />
-            </View>
-          )} */}
+          {/* <View style={styles.takenPhotoContainer}>
+            <Image source={{ uri: photo, height: 200, width: 200 }} />
+          </View> */}
           <TouchableOpacity onPress={takePicture} style={styles.snapContainer}>
             <Text style={styles.snap}>
               <Icon name="camera" type="font-awesome" color="#fff" size={20} />
@@ -141,7 +121,9 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
+    borderWidth: 1,
     alignItems: "center",
     justifyContent: "center",
+    borderColor: "#ff0000",
   },
 });

@@ -13,7 +13,7 @@ export default function PostsScreen({ navigation, route }) {
   const [posts, setPosts] = useState([]);
   useEffect(() => {
     if (route.params) {
-      setPosts((prevState) => [...prevState, route.params]);
+      setPosts((prevState) => [...prevState, { uri: route.params.photo }]);
     }
   }, [route.params]);
 
@@ -49,11 +49,17 @@ export default function PostsScreen({ navigation, route }) {
       <FlatList
         data={posts}
         keyExtractor={(item, index) => index.toString()}
-        renderItem={({ item }) => (
-          <View style={styles.flatContainer}>
-            <Image source={{ uri: item.uri }} />
-          </View>
-        )}
+        renderItem={({ item }) => {
+          return (
+            <View style={styles.flatContainer}>
+              <Image
+                source={{ uri: item.uri }}
+                style={{ width: "100%", height: "100%" }}
+                resizeMode="cover"
+              />
+            </View>
+          );
+        }}
       />
     </View>
   );
