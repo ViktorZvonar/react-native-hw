@@ -1,14 +1,14 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons } from "@expo/vector-icons";
 import { MaterialIcons } from "@expo/vector-icons";
 import { View, TouchableOpacity } from "react-native";
+import { Keyboard } from "react-native";
 
 import { createStackNavigator } from "@react-navigation/stack";
 
 import CommentsScreen from "./CommentsScreen";
 import MapScreen from "./MapScreen";
-
 import PostsScreen from "./PostsScreen";
 import CreatePostsScreen from "./CreatePostsScreen";
 import ProfileScreen from "./ProfileScreen";
@@ -100,7 +100,7 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
             ) : (
               <Ionicons
                 name={
-                  label === "Posts"
+                  label === "PostsStack"
                     ? isFocused
                       ? "grid"
                       : "grid-outline"
@@ -144,8 +144,20 @@ function PostsStackScreen() {
 }
 
 function BottomTabNavigator() {
+  const [keyboardShown, setKeyboardShown] = useState(false);
+  useEffect(() => {
+    Keyboard.addListener("keyboardDidShow", () => setKeyboardShown(true));
+    Keyboard.addListener("keyboardDidHide", () => setKeyboardShown(false));
+
+    return () => {
+      Keyboard.removeListener("keyboardDidShow");
+      Keyboard.removeListener("keyboardDidHide");
+    };
+  }, []);
   return (
-    <BottomTab.Navigator tabBar={(props) => <CustomTabBar {...props} />}>
+    <BottomTab.Navigator
+      tabBar={(props) => (!keyboardShown ? <CustomTabBar {...props} /> : null)}
+    >
       <BottomTab.Screen
         name="PostsStack"
         component={PostsStackScreen}

@@ -1,19 +1,34 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, StyleSheet } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  KeyboardAvoidingView,
+  Platform,
+  TouchableWithoutFeedback,
+  Keyboard,
+} from "react-native";
 import { Camera } from "expo-camera";
-import { Icon } from "react-native-elements";
+import { Icon, Input } from "react-native-elements";
 import * as MediaLibrary from "expo-media-library";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import * as Location from "expo-location";
 
 export default function CreatePostsScreen({ navigation }) {
-  const [hasPermission, setHasPermission] = useState(null);
+  const keyboardHide = () => {
+    Keyboard.dismiss();
+    setIsShowKeyboard(false);
+  };
+  const [hasCameraPermission, setHasCameraPermission] = useState(null);
   const [hasMediaLibraryPermission, setHasMediaLibraryPermission] =
     useState(null);
   const [hasLocationPermission, setHasLocationPermission] = useState(null);
   const [cameraRef, setCameraRef] = useState(null);
   const [photo, setPhoto] = useState(null);
   const [location, setLocation] = useState(null);
+  const [photoName, setPhotoName] = useState("");
+  const [photoLocation, setPhotoLocation] = useState("");
+  const [isShowKeyboard, setIsShowKeyboard] = useState(false);
 
   useEffect(() => {
     (async () => {
@@ -23,15 +38,15 @@ export default function CreatePostsScreen({ navigation }) {
       const { status: locationStatus } =
         await Location.requestForegroundPermissionsAsync();
       setHasLocationPermission(locationStatus === "granted");
-      setHasPermission(status === "granted");
+      setHasCameraPermission(status === "granted");
       setHasMediaLibraryPermission(mediaLibraryStatus === "granted");
     })();
   }, []);
 
-  if (hasPermission === null) {
+  if (hasCameraPermission === null) {
     return <View />;
   }
-  if (hasPermission === false) {
+  if (hasCameraPermission === false) {
     return <Text>No access to camera</Text>;
   }
 
@@ -53,7 +68,12 @@ export default function CreatePostsScreen({ navigation }) {
       setLocation(coords);
       console.log(location);
 
-      navigation.navigate("Posts", { photo, location });
+      navigation.navigate("Posts", {
+        photo,
+        location,
+        photoName,
+        photoLocation,
+      });
     } else {
       alert(
         "Location not available. Please ensure location permissions are granted and try again."
@@ -62,25 +82,79 @@ export default function CreatePostsScreen({ navigation }) {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.cameraWrapper}>
-        <Camera
-          style={styles.camera}
-          ref={(ref) => {
-            setCameraRef(ref);
-          }}
-        >
-          <TouchableOpacity onPress={takePicture} style={styles.snapContainer}>
-            <Text style={styles.snap}>
-              <Icon name="camera" type="font-awesome" color="#fff" size={20} />
-            </Text>
+    <TouchableWithoutFeedback onPress={keyboardHide}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={styles.container}
+      >
+        <View>
+          <View style={styles.cameraWrapper}>
+            <Camera
+              style={styles.camera}
+              ref={(ref) => {
+                setCameraRef(ref);
+              }}
+            >
+              <TouchableOpacity
+                onPress={takePicture}
+                style={styles.snapContainer}
+              >
+                <Text style={styles.snap}>
+                  <Icon
+                    name="camera"
+                    type="font-awesome"
+                    color="#fff"
+                    size={20}
+                  />
+                </Text>
+              </TouchableOpacity>
+            </Camera>
+          </View>
+
+          <View style={styles.inputContainer}>
+            <Input
+              inputStyle={styles.textInput}
+              inputContainerStyle={styles.inputContainerStyle}
+              placeholder="Title"
+              onChangeText={(text) => setPhotoName(text)}
+              value={photoName}
+              leftIcon={{
+                type: "font-awesome",
+                name: "camera",
+                color: "#E8E8E8",
+                size: 18,
+              }}
+              placeholderTextColor="#BDBDBD"
+              onFocus={() => setIsShowKeyboard(true)}
+              onBlur={() => setIsShowKeyboard(false)}
+            />
+
+            <Input
+              inputStyle={styles.textInput}
+              inputContainerStyle={styles.inputContainerStyle}
+              placeholder="Location"
+              onChangeText={(text) => setPhotoLocation(text)}
+              value={photoLocation}
+              leftIcon={{
+                type: "font-awesome",
+                name: "map-pin",
+                color: "#E8E8E8",
+                size: 18,
+              }}
+              placeholderTextColor="#BDBDBD"
+              onFocus={() => setIsShowKeyboard(true)}
+              onBlur={() => setIsShowKeyboard(false)}
+            />
+          </View>
+          <TouchableOpacity
+            style={styles.publishButton}
+            onPress={publishPicture}
+          >
+            <Text style={styles.publishButtonText}>Publish</Text>
           </TouchableOpacity>
-        </Camera>
-      </View>
-      <TouchableOpacity style={styles.publishButton} onPress={publishPicture}>
-        <Text style={styles.publishButtonText}>Publish</Text>
-      </TouchableOpacity>
-    </View>
+        </View>
+      </KeyboardAvoidingView>
+    </TouchableWithoutFeedback>
   );
 }
 
@@ -118,12 +192,27 @@ const styles = StyleSheet.create({
     borderRadius: 100,
     paddingHorizontal: 32,
     paddingVertical: 16,
-    marginTop: 12,
+    marginTop: 32,
     backgroundColor: "#FF6C00",
     alignItems: "center",
     justifyContent: "center",
   },
   publishButtonText: {
     color: "#fff",
+  },
+  inputContainer: {
+    marginTop: 48,
+  },
+  textInput: {
+    height: 40,
+    fontStyle: "normal",
+    fontWeight: "400",
+    fontSize: 16,
+    color: "#000000",
+  },
+
+  inputContainerStyle: {
+    borderBottomWidth: 1,
+    borderBottomColor: "#E8E8E8",
   },
 });

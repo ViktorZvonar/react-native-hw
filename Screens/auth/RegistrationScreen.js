@@ -8,7 +8,6 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
   TouchableOpacity,
-  Button,
 } from "react-native";
 
 import { useState } from "react";

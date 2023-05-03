@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Icon } from "react-native-elements";
 import {
   Text,
   View,
@@ -14,7 +15,14 @@ export default function PostsScreen({ navigation, route }) {
   const [locations, setLocations] = useState([]);
   useEffect(() => {
     if (route.params) {
-      setPosts((prevState) => [...prevState, { uri: route.params.photo }]);
+      setPosts((prevState) => [
+        ...prevState,
+        {
+          uri: route.params.photo,
+          name: route.params.photoName,
+          locationName: route.params.photoLocation,
+        },
+      ]);
       setLocations((prevState) => {
         const newLocations = [...prevState];
         newLocations.push(route.params.location.coords);
@@ -52,65 +60,82 @@ export default function PostsScreen({ navigation, route }) {
         </Text>
       </View>
 
-      <FlatList
-        data={posts}
-        keyExtractor={(item, index) => index.toString()}
-        renderItem={({ item, index }) => {
-          return (
-            <View style={styles.flatContainer}>
-              <Image
-                source={{ uri: item.uri }}
-                style={{ width: "100%", height: "100%" }}
-                resizeMode="cover"
-              />
-              <TouchableOpacity
-                onPress={() => navigation.navigate("CommentsScreen")}
-                style={styles.commentIcon}
-              >
-                <Ionicons name="chatbubble-outline" size={18} color="black" />
-              </TouchableOpacity>
-              {locations[index] && (
-                <Text style={styles.locationText}>
-                  Lat: {locations[index].latitude.toFixed(2)}, Lng:{" "}
-                  {locations[index].longitude.toFixed(2)}
-                </Text>
-              )}
-              <TouchableOpacity
-                onPress={() =>
-                  navigation.navigate("MapScreen", { coords: locations[index] })
-                }
-                style={styles.geoIcon}
-              >
-                <Ionicons name="location-outline" size={18} color="white" />
-              </TouchableOpacity>
-            </View>
-          );
-        }}
-      />
+      {posts.length === 0 ? (
+        <View style={styles.emptyContainer}>
+          <View style={styles.iconEmptyContainer}>
+            <Icon name="camera" type="font-awesome" color="white" size={20} />
+          </View>
+        </View>
+      ) : (
+        <FlatList
+          data={posts}
+          keyExtractor={(item, index) => index.toString()}
+          renderItem={({ item, index }) => {
+            return (
+              <View>
+                <View style={styles.flatContainer}>
+                  <Image
+                    source={{ uri: item.uri }}
+                    style={{ width: "100%", height: "100%" }}
+                    resizeMode="cover"
+                  />
+                </View>
+                <Text style={styles.titleText}>{item.name}</Text>
+                <View style={styles.iconsContainer}>
+                  <View style={styles.infoContainer}>
+                    <TouchableOpacity
+                      onPress={() => navigation.navigate("CommentsScreen")}
+                      style={styles.commentIcon}
+                    >
+                      <Ionicons
+                        name="chatbubble-outline"
+                        size={18}
+                        color="#BDBDBD"
+                      />
+                    </TouchableOpacity>
+                    <Text style={styles.commentCount}>0</Text>
+                  </View>
+                  <View style={styles.infoContainer}>
+                    <TouchableOpacity
+                      onPress={() =>
+                        navigation.navigate("MapScreen", {
+                          coords: locations[index],
+                        })
+                      }
+                      style={styles.geoIcon}
+                    >
+                      <Ionicons
+                        name="location-outline"
+                        size={18}
+                        color="#BDBDBD"
+                      />
+                    </TouchableOpacity>
+                    <Text style={styles.locationNameText}>
+                      {item.locationName}
+                    </Text>
+                  </View>
+                </View>
+              </View>
+            );
+          }}
+        />
+      )}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { paddingVertical: 32, paddingHorizontal: 16 },
+  container: {
+    paddingVertical: 32,
+    paddingHorizontal: 16,
+  },
   userContainer: {
     flexDirection: "row",
     alignItems: "center",
   },
-
-  flatContainer: {
-    marginTop: 32,
-    width: "100%",
-    height: 240,
-    borderRadius: 8,
-    overflow: "hidden",
-    borderWidth: 1,
-  },
-
   textContainer: {
     marginLeft: 8,
   },
-
   userPhoto: {
     width: 60,
     height: 60,
@@ -124,30 +149,65 @@ const styles = StyleSheet.create({
     fontWeight: "normal",
     fontSize: 11,
   },
-  commentIcon: {
-    position: "absolute",
-    bottom: 10,
-    left: 10,
-    backgroundColor: "rgba(255, 255, 255, 0.7)",
-    borderRadius: 12,
-    padding: 4,
+  flatContainer: {
+    marginTop: 32,
+    width: "100%",
+    height: 240,
+    borderRadius: 8,
+    overflow: "hidden",
+    borderWidth: 1,
   },
-  locationText: {
-    position: "absolute",
-    top: 10,
-    left: 10,
-    color: "white",
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
-    padding: 4,
-    borderRadius: 4,
-    fontSize: 12,
+  titleText: {
+    marginTop: 8,
+    color: "black",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  iconsContainer: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginTop: 4,
+  },
+  commentIcon: {
+    borderRadius: 12,
+    marginRight: 8,
+  },
+  commentCount: {
+    fontSize: 16,
+    color: "#BDBDBD",
   },
   geoIcon: {
-    position: "absolute",
-    top: 10,
-    right: 10,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
     borderRadius: 12,
-    padding: 4,
+    marginRight: 8,
+    marginLeft: 8,
+  },
+  locationNameText: {
+    flexGrow: 1,
+    color: "black",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  infoContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  emptyContainer: {
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 32,
+    width: "100%",
+    height: 240,
+    borderWidth: 1,
+    borderColor: "#E8E8E8",
+    borderRadius: 8,
+    backgroundColor: "white",
+  },
+  iconEmptyContainer: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: "#BDBDBD",
+    justifyContent: "center",
+    alignItems: "center",
   },
 });
