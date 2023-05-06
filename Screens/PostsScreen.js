@@ -10,6 +10,9 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 
+import { useDispatch } from "react-redux";
+import { authLogOut } from "../redux/auth/authOperations";
+
 export default function PostsScreen({ navigation, route }) {
   const [posts, setPosts] = useState([]);
   const [locations, setLocations] = useState([]);
@@ -31,10 +34,21 @@ export default function PostsScreen({ navigation, route }) {
     }
   }, [route.params]);
 
+  const dispatch = useDispatch();
+
+  const handleLogout = async () => {
+    try {
+      await dispatch(authLogOut());
+      navigation.navigate("Registration");
+    } catch (error) {
+      console.log("Error logging out:", error);
+    }
+  };
+
   React.useLayoutEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <TouchableOpacity onPress={() => navigation.navigate("Registration")}>
+        <TouchableOpacity onPress={handleLogout}>
           <Ionicons
             name="log-out-outline"
             size={24}

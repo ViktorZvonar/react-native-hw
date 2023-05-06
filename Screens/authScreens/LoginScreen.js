@@ -1,5 +1,4 @@
 import {
-  Alert,
   Image,
   StyleSheet,
   Text,
@@ -7,9 +6,11 @@ import {
   TextInput,
   TouchableWithoutFeedback,
   Keyboard,
-  Button,
   TouchableOpacity,
 } from "react-native";
+
+import { useDispatch } from "react-redux";
+import { authLogin } from "../../redux/auth/authOperations";
 
 import { useState } from "react";
 import React from "react";
@@ -22,19 +23,22 @@ const initialState = {
 const LoginScreen = ({ navigation }) => {
   const [state, setstate] = useState(initialState);
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
-  const onLogin = () => {
-    const isLoginSuccessful = true;
-    if (isLoginSuccessful) {
+
+  const dispatch = useDispatch();
+
+  const handleSubmit = async () => {
+    try {
+      const user = await dispatch(authLogin(state));
+      setstate(initialState);
       navigation.navigate("Home");
-    } else {
-      Alert.alert("Credentials", `Your email: ${state.email}`);
-      console.log(state);
+    } catch (error) {
+      console.log(error.message);
     }
   };
 
   const keyboardHide = () => {
-    setIsShowKeyboard(false);
     Keyboard.dismiss();
+    setIsShowKeyboard(false);
   };
 
   return (
@@ -103,9 +107,9 @@ const LoginScreen = ({ navigation }) => {
             <TouchableOpacity
               activeOpacity={0.8}
               style={styles.btn}
-              onPress={onLogin}
+              onPress={handleSubmit}
             >
-              <Text style={styles.btnTitle}>Register</Text>
+              <Text style={styles.btnTitle}>Log in</Text>
             </TouchableOpacity>
           )}
           {!isShowKeyboard && (

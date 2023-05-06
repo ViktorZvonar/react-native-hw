@@ -146,12 +146,18 @@ function PostsStackScreen() {
 function BottomTabNavigator() {
   const [keyboardShown, setKeyboardShown] = useState(false);
   useEffect(() => {
-    Keyboard.addListener("keyboardDidShow", () => setKeyboardShown(true));
-    Keyboard.addListener("keyboardDidHide", () => setKeyboardShown(false));
+    const keyboardDidShowListener = Keyboard.addListener(
+      "keyboardDidShow",
+      () => setKeyboardShown(true)
+    );
+    const keyboardDidHideListener = Keyboard.addListener(
+      "keyboardDidHide",
+      () => setKeyboardShown(false)
+    );
 
     return () => {
-      Keyboard.removeListener("keyboardDidShow");
-      Keyboard.removeListener("keyboardDidHide");
+      keyboardDidShowListener.remove();
+      keyboardDidHideListener.remove();
     };
   }, []);
   return (

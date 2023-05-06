@@ -1,5 +1,4 @@
 import {
-  Alert,
   Image,
   StyleSheet,
   Text,
@@ -10,8 +9,13 @@ import {
   TouchableOpacity,
 } from "react-native";
 
+import { useDispatch } from "react-redux";
+import { authRegister } from "../../redux/auth/authOperations";
+
 import { useState } from "react";
 import React from "react";
+
+import { updateUserProfile } from "../../redux/auth/authReducer";
 
 const initialState = {
   login: "",
@@ -23,13 +27,24 @@ const RegistrationScreen = ({ navigation }) => {
   const [state, setstate] = useState(initialState);
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
 
-  const onLogin = () => {
-    const isLoginSuccessful = true;
-    if (isLoginSuccessful) {
+  const dispatch = useDispatch();
+
+  const [error, setError] = useState(null);
+
+  const handleSubmit = async () => {
+    try {
+      const user = await dispatch(authRegister(state));
+      dispatch(
+        updateUserProfile({
+          id: user.uid,
+          login: user.displayName,
+          email: user.email,
+        })
+      );
+      setstate(initialState);
       navigation.navigate("Home");
-    } else {
-      Alert.alert("Credentials", `Your email: ${state.email}`);
-      console.log(state);
+    } catch (error) {
+      setError(error.message);
     }
   };
 
@@ -115,11 +130,12 @@ const RegistrationScreen = ({ navigation }) => {
             <TouchableOpacity
               activeOpacity={0.8}
               style={styles.btn}
-              onPress={onLogin}
+              onPress={handleSubmit}
             >
               <Text style={styles.btnTitle}>Register</Text>
             </TouchableOpacity>
           )}
+          {error && <Text style={styles.errorMsg}>{error}</Text>}
           {!isShowKeyboard && (
             <TouchableOpacity onPress={() => navigation.navigate("Login")}>
               <Text style={styles.msg}>
@@ -229,6 +245,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     backgroundColor: "#fff",
     marginTop: 16,
+  },
+  errorMsg: {
+    color: "red",
+    textAlign: "center",
+    marginTop: 8,
   },
 });
 
