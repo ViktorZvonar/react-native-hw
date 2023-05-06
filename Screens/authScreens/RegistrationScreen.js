@@ -11,11 +11,9 @@ import {
 
 import { useDispatch } from "react-redux";
 import { authRegister } from "../../redux/auth/authOperations";
-
-import { useState } from "react";
-import React from "react";
-
 import { updateUserProfile } from "../../redux/auth/authReducer";
+
+import React, { useState } from "react";
 
 const initialState = {
   login: "",
@@ -24,12 +22,11 @@ const initialState = {
 };
 
 const RegistrationScreen = ({ navigation }) => {
-  const [state, setstate] = useState(initialState);
+  const [state, setState] = useState(initialState);
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const dispatch = useDispatch();
-
-  const [error, setError] = useState(null);
 
   const handleSubmit = async () => {
     try {
@@ -41,16 +38,20 @@ const RegistrationScreen = ({ navigation }) => {
           email: user.email,
         })
       );
-      setstate(initialState);
+      setState(initialState);
       navigation.navigate("Home");
     } catch (error) {
-      setError(error.message);
+      console.log(error.message);
     }
   };
 
   const keyboardHide = () => {
     Keyboard.dismiss();
     setIsShowKeyboard(false);
+  };
+
+  const toggleShowPassword = () => {
+    setShowPassword(!showPassword);
   };
 
   return (
@@ -83,7 +84,7 @@ const RegistrationScreen = ({ navigation }) => {
               onBlur={() => setIsShowKeyboard(false)}
               value={state.login}
               onChangeText={(value) =>
-                setstate((prevState) => ({ ...prevState, login: value }))
+                setState((prevState) => ({ ...prevState, login: value }))
               }
             />
           </View>
@@ -97,34 +98,42 @@ const RegistrationScreen = ({ navigation }) => {
               placeholder={"Email"}
               value={state.email}
               onChangeText={(value) =>
-                setstate((prevState) => ({ ...prevState, email: value }))
+                setState((prevState) => ({ ...prevState, email: value }))
               }
               onFocus={() => setIsShowKeyboard(true)}
               onBlur={() => setIsShowKeyboard(false)}
             />
           </View>
           <View style={{ marginTop: 16 }}>
-            <TouchableOpacity activeOpacity={0.8} style={styles.showBtn}>
-              <Text style={styles.showBtnTitle}>Show</Text>
-            </TouchableOpacity>
+            <View style={styles.passwordWrapper}>
+              <TouchableOpacity
+                activeOpacity={0.8}
+                style={styles.showBtn}
+                onPress={toggleShowPassword}
+              >
+                <Text style={styles.showBtnTitle}>
+                  {showPassword ? "Hide" : "Show"}
+                </Text>
+              </TouchableOpacity>
 
-            <TextInput
-              style={{
-                ...styles.input,
-                borderColor: isShowKeyboard ? "#FF6C00" : "#E8E8E8",
-                backgroundColor: isShowKeyboard ? "#FFFFFF" : "#F6F6F6",
-              }}
-              placeholder={"Password"}
-              value={state.password}
-              onChangeText={(value) =>
-                setstate((prevState) => ({ ...prevState, password: value }))
-              }
-              secureTextEntry={true}
-              onFocus={() => {
-                setIsShowKeyboard(true);
-              }}
-              onBlur={() => setIsShowKeyboard(false)}
-            />
+              <TextInput
+                style={{
+                  ...styles.input,
+                  borderColor: isShowKeyboard ? "#FF6C00" : "#E8E8E8",
+                  backgroundColor: isShowKeyboard ? "#FFFFFF" : "#F6F6F6",
+                }}
+                placeholder={"Password"}
+                value={state.password}
+                onChangeText={(value) =>
+                  setState((prevState) => ({ ...prevState, password: value }))
+                }
+                secureTextEntry={!showPassword}
+                onFocus={() => {
+                  setIsShowKeyboard(true);
+                }}
+                onBlur={() => setIsShowKeyboard(false)}
+              />
+            </View>
           </View>
           {!isShowKeyboard && (
             <TouchableOpacity
@@ -135,7 +144,6 @@ const RegistrationScreen = ({ navigation }) => {
               <Text style={styles.btnTitle}>Register</Text>
             </TouchableOpacity>
           )}
-          {error && <Text style={styles.errorMsg}>{error}</Text>}
           {!isShowKeyboard && (
             <TouchableOpacity onPress={() => navigation.navigate("Login")}>
               <Text style={styles.msg}>
@@ -170,12 +178,16 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     paddingLeft: 16,
     fontSize: 16,
+    width: "100%",
+  },
+  passwordWrapper: {
+    flexDirection: "row",
+    position: "relative",
   },
   showBtn: {
     position: "absolute",
     zIndex: 999,
     alignSelf: "center",
-    top: 15,
     right: 15,
     backgroundColor: "transparent",
   },
@@ -224,7 +236,7 @@ const styles = StyleSheet.create({
   },
   formTitle: {
     marginBottom: 33,
-    fontSize: 30,
+    fontSize: 28,
     marginHorizontal: 95,
     fontWeight: "500",
   },
@@ -245,11 +257,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     backgroundColor: "#fff",
     marginTop: 16,
-  },
-  errorMsg: {
-    color: "red",
-    textAlign: "center",
-    marginTop: 8,
   },
 });
 
