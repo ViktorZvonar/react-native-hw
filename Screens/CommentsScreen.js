@@ -1,7 +1,22 @@
-import React from "react";
-import { View, Text, Image, StyleSheet, TextInput } from "react-native";
+import React, { useState, useEffect } from "react";
+import {
+  View,
+  Text,
+  Image,
+  StyleSheet,
+  TextInput,
+  TouchableWithoutFeedback,
+} from "react-native";
 
 const CommentsScreen = ({ route }) => {
+  const [comment, setComment] = useState(null);
+  const [isShowKeyboard, setIsShowKeyboard] = useState(false);
+
+  const keyboardHide = () => {
+    Keyboard.dismiss();
+    setIsShowKeyboard(false);
+  };
+
   const { photo } = route.params;
 
   const getCurrentDate = () => {
@@ -14,19 +29,28 @@ const CommentsScreen = ({ route }) => {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.cameraWrapper}>
-        <Image
-          source={{ uri: photo }}
-          style={{ width: "100%", height: 240 }}
-          resizeMode="cover"
-        />
+    <TouchableWithoutFeedback onPress={keyboardHide}>
+      <View style={styles.container}>
+        <View style={styles.cameraWrapper}>
+          <Image
+            source={{ uri: photo }}
+            style={{ width: "100%", height: 240 }}
+            resizeMode="cover"
+          />
+        </View>
+        <View style={styles.inputWrapper}>
+          <TextInput
+            style={styles.commentInput}
+            placeholder="Add a comment..."
+            onChangeText={(text) => setComment(text)}
+            value={comment}
+            onFocus={() => setIsShowKeyboard(true)}
+            onBlur={() => setIsShowKeyboard(false)}
+          />
+          <Text style={styles.dateText}>{getCurrentDate()}</Text>
+        </View>
       </View>
-      <View style={styles.inputWrapper}>
-        <TextInput style={styles.commentInput} placeholder="Add a comment..." />
-        <Text style={styles.dateText}>{getCurrentDate()}</Text>
-      </View>
-    </View>
+    </TouchableWithoutFeedback>
   );
 };
 

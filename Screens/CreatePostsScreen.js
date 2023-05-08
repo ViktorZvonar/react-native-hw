@@ -18,6 +18,7 @@ import * as Location from "expo-location";
 import { collection, addDoc } from "firebase/firestore";
 import { db, storage } from "../firebase/config";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { getMetadata } from "firebase/storage";
 
 export default function CreatePostsScreen({ navigation }) {
   const keyboardHide = () => {
@@ -73,7 +74,14 @@ export default function CreatePostsScreen({ navigation }) {
       const blobFile = await response.blob();
       const id = Date.now();
       const storageRef = ref(storage, `postImages/${id}`);
-      await uploadBytes(storageRef, blobFile);
+      const metadata = {
+        contentType: "image/jpeg",
+        customMetadata: {
+          name: photoName,
+          location: photoLocation,
+        },
+      };
+      await uploadBytes(storageRef, blobFile, metadata);
       const downloadURL = await getDownloadURL(storageRef);
       console.log("File available at", downloadURL);
     } catch (err) {
