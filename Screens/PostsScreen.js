@@ -98,7 +98,11 @@ export default function PostsScreen({ navigation, route }) {
                 <View style={styles.iconsContainer}>
                   <View style={styles.infoContainer}>
                     <TouchableOpacity
-                      onPress={() => navigation.navigate("CommentsScreen")}
+                      onPress={() =>
+                        navigation.navigate("CommentsScreen", {
+                          photo: item.uri,
+                        })
+                      }
                       style={styles.commentIcon}
                     >
                       <Ionicons

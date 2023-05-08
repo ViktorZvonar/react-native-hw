@@ -7,12 +7,17 @@ import {
   Platform,
   TouchableWithoutFeedback,
   Keyboard,
+  Alert,
 } from "react-native";
 import { Camera } from "expo-camera";
 import { Icon, Input } from "react-native-elements";
 import * as MediaLibrary from "expo-media-library";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import * as Location from "expo-location";
+
+import { collection, addDoc } from "firebase/firestore";
+import { db, storage } from "../firebase/config";
+import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
 export default function CreatePostsScreen({ navigation }) {
   const keyboardHide = () => {
@@ -51,14 +56,33 @@ export default function CreatePostsScreen({ navigation }) {
   }
 
   const takePicture = async () => {
-    console.log("Taking picture...");
+    console.log(photoName);
+    console.log(photoLocation);
     const photo = await cameraRef.takePictureAsync();
     console.log("Photo taken:", photo.uri);
     await MediaLibrary.createAssetAsync(photo.uri);
     setPhoto(photo.uri);
   };
 
+  const writePhotoToServer = async (image) => {
+    console.log("writePhotoToServer called with image:", image);
+    if (!image) return;
+    try {
+      const response = await fetch(image);
+      console.log("Fetched image:", response);
+      const blobFile = await response.blob();
+      const id = Date.now();
+      const storageRef = ref(storage, `postImages/${id}`);
+      await uploadBytes(storageRef, blobFile);
+      const downloadURL = await getDownloadURL(storageRef);
+      console.log("File available at", downloadURL);
+    } catch (err) {
+      Alert.alert("Try again \n", err.message);
+    }
+  };
+
   const publishPicture = async () => {
+    writePhotoToServer(photo);
     if (hasLocationPermission) {
       const location = await Location.getCurrentPositionAsync({});
       const coords = {
@@ -66,7 +90,6 @@ export default function CreatePostsScreen({ navigation }) {
         longitude: location.coords.longitude,
       };
       setLocation(coords);
-      console.log(location);
 
       navigation.navigate("Posts", {
         photo,
