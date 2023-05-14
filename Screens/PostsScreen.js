@@ -18,12 +18,14 @@ export default function PostsScreen({ navigation, route }) {
   const [locations, setLocations] = useState([]);
   useEffect(() => {
     if (route.params) {
+      console.log("route params", route.params);
       setPosts((prevState) => [
         ...prevState,
         {
           uri: route.params.photo,
           name: route.params.photoName,
           locationName: route.params.photoLocation,
+          postId: route.params.postId,
         },
       ]);
       setLocations((prevState) => {
@@ -101,6 +103,7 @@ export default function PostsScreen({ navigation, route }) {
                       onPress={() =>
                         navigation.navigate("CommentsScreen", {
                           photo: item.uri,
+                          postId: item.postId,
                         })
                       }
                       style={styles.commentIcon}

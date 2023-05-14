@@ -6,18 +6,24 @@ import {
   StyleSheet,
   TextInput,
   TouchableWithoutFeedback,
+  Keyboard,
+  Button,
 } from "react-native";
 
+import { doc, addDoc, collection, updateDoc } from "firebase/firestore";
+import { db, storage } from "../firebase/config";
+
 const CommentsScreen = ({ route }) => {
-  const [comment, setComment] = useState(null);
+  const { photo, postId } = route.params;
+  console.log("postId in Comments", postId);
+  const [comment, setComment] = useState("");
+  const [newComment, setNewComment] = useState("");
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
 
   const keyboardHide = () => {
     Keyboard.dismiss();
     setIsShowKeyboard(false);
   };
-
-  const { photo } = route.params;
 
   const getCurrentDate = () => {
     const currentDate = new Date();
@@ -26,6 +32,26 @@ const CommentsScreen = ({ route }) => {
     const year = currentDate.getFullYear();
 
     return `${day} ${month} ${year}`;
+  };
+
+  const submitComment = async () => {
+    if (comment) {
+      try {
+        const newComment = {
+          message: comment,
+          date: getCurrentDate(),
+        };
+
+        const postRef = doc(db, "postImages", postId);
+        const commentsCollectionRef = collection(postRef, "comments");
+
+        await addDoc(commentsCollectionRef, newComment);
+        console.log("Comment added successfully.");
+        setComment("");
+      } catch (err) {
+        console.log("Try again \n", err.message);
+      }
+    }
   };
 
   return (
@@ -42,10 +68,15 @@ const CommentsScreen = ({ route }) => {
           <TextInput
             style={styles.commentInput}
             placeholder="Add a comment..."
-            onChangeText={(text) => setComment(text)}
             value={comment}
+            onChangeText={(value) => setComment(value)}
             onFocus={() => setIsShowKeyboard(true)}
             onBlur={() => setIsShowKeyboard(false)}
+          />
+          <Button
+            title="Submit Comment"
+            onPress={submitComment}
+            color="#841584"
           />
           <Text style={styles.dateText}>{getCurrentDate()}</Text>
         </View>

@@ -18,7 +18,6 @@ import * as Location from "expo-location";
 import { collection, addDoc } from "firebase/firestore";
 import { db, storage } from "../firebase/config";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { getMetadata } from "firebase/storage";
 
 export default function CreatePostsScreen({ navigation }) {
   const keyboardHide = () => {
@@ -31,6 +30,7 @@ export default function CreatePostsScreen({ navigation }) {
   const [hasLocationPermission, setHasLocationPermission] = useState(null);
   const [cameraRef, setCameraRef] = useState(null);
   const [photo, setPhoto] = useState(null);
+  const [postId, setPostId] = useState(null);
   const [location, setLocation] = useState(null);
   const [photoName, setPhotoName] = useState("");
   const [photoLocation, setPhotoLocation] = useState("");
@@ -65,32 +65,39 @@ export default function CreatePostsScreen({ navigation }) {
     setPhoto(photo.uri);
   };
 
+  const uploadPhoto = async (image, id) => {
+    const response = await fetch(image);
+    console.log("Fetched image:", response);
+    const blobFile = await response.blob();
+    const storageRef = ref(storage, `postImages/${id}`);
+    const metadata = {
+      contentType: "image/jpeg",
+      customMetadata: {
+        name: photoName,
+        location: photoLocation,
+      },
+    };
+    await uploadBytes(storageRef, blobFile, metadata);
+    const processedPhoto = await getDownloadURL(storageRef);
+    console.log("File available at:", processedPhoto, "postId:", id);
+    return processedPhoto;
+  };
+
   const writePhotoToServer = async (image) => {
     console.log("writePhotoToServer called with image:", image);
     if (!image) return;
     try {
-      const response = await fetch(image);
-      console.log("Fetched image:", response);
-      const blobFile = await response.blob();
       const id = Date.now();
-      const storageRef = ref(storage, `postImages/${id}`);
-      const metadata = {
-        contentType: "image/jpeg",
-        customMetadata: {
-          name: photoName,
-          location: photoLocation,
-        },
-      };
-      await uploadBytes(storageRef, blobFile, metadata);
-      const downloadURL = await getDownloadURL(storageRef);
-      console.log("File available at", downloadURL);
+      setPostId(id);
+      const processedPhoto = await uploadPhoto(image, id);
+      console.log("File available at:", processedPhoto, "postId:", id);
     } catch (err) {
       Alert.alert("Try again \n", err.message);
     }
   };
 
   const publishPicture = async () => {
-    writePhotoToServer(photo);
+    await writePhotoToServer(photo);
     if (hasLocationPermission) {
       const location = await Location.getCurrentPositionAsync({});
       const coords = {
@@ -104,6 +111,7 @@ export default function CreatePostsScreen({ navigation }) {
         location,
         photoName,
         photoLocation,
+        postId,
       });
     } else {
       alert(
