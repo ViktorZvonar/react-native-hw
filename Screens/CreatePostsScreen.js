@@ -35,6 +35,7 @@ export default function CreatePostsScreen({ navigation }) {
   const [photoName, setPhotoName] = useState("");
   const [photoLocation, setPhotoLocation] = useState("");
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
+  const [comments, setComments] = useState([]);
 
   useEffect(() => {
     (async () => {
@@ -99,6 +100,7 @@ export default function CreatePostsScreen({ navigation }) {
         location: photoLocation,
         comments: [],
       };
+      setComments(newPost.comments);
 
       const postsRef = collection(db, "posts");
       const docRef = await addDoc(postsRef, newPost);
