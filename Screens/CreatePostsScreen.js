@@ -83,21 +83,33 @@ export default function CreatePostsScreen({ navigation }) {
     return processedPhoto;
   };
 
-  const writePhotoToServer = async (image) => {
-    console.log("writePhotoToServer called with image:", image);
+  const writePostToServer = async (image) => {
+    console.log("writePostToServer called with image:", image);
     if (!image) return;
     try {
       const id = Date.now();
       setPostId(id);
       const processedPhoto = await uploadPhoto(image, id);
       console.log("File available at:", processedPhoto, "postId:", id);
+
+      const newPost = {
+        id: id,
+        photo: processedPhoto,
+        name: photoName,
+        location: photoLocation,
+        comments: [],
+      };
+
+      const postsRef = collection(db, "posts");
+      const docRef = await addDoc(postsRef, newPost);
+      console.log("Document written with ID: ", docRef.id);
     } catch (err) {
       Alert.alert("Try again \n", err.message);
     }
   };
 
   const publishPicture = async () => {
-    await writePhotoToServer(photo);
+    await writePostToServer(photo);
     if (hasLocationPermission) {
       const location = await Location.getCurrentPositionAsync({});
       const coords = {
@@ -112,6 +124,7 @@ export default function CreatePostsScreen({ navigation }) {
         photoName,
         photoLocation,
         postId,
+        comments,
       });
     } else {
       alert(

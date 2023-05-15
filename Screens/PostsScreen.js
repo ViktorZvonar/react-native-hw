@@ -26,6 +26,7 @@ export default function PostsScreen({ navigation, route }) {
           name: route.params.photoName,
           locationName: route.params.photoLocation,
           postId: route.params.postId,
+          comments: route.params.comments,
         },
       ]);
       setLocations((prevState) => {
@@ -64,7 +65,7 @@ export default function PostsScreen({ navigation, route }) {
 
   return (
     <View style={styles.container}>
-      <View style={styles.userContainer}>
+      {/* <View style={styles.userContainer}>
         <Image
           source={require("../images/Rectangle22.jpg")}
           style={styles.userPhoto}
@@ -74,7 +75,7 @@ export default function PostsScreen({ navigation, route }) {
           {"\n"}
           <Text style={styles.userEmail}>email@example.com</Text>
         </Text>
-      </View>
+      </View> */}
 
       {posts.length === 0 ? (
         <View style={styles.emptyContainer}>

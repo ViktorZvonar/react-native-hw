@@ -10,14 +10,14 @@ import {
   Button,
 } from "react-native";
 
-import { doc, addDoc, collection, updateDoc } from "firebase/firestore";
+import { doc, setDoc, collection, updateDoc } from "firebase/firestore";
 import { db, storage } from "../firebase/config";
 
 const CommentsScreen = ({ route }) => {
-  const { photo, postId } = route.params;
+  const { photo, postId, comments } = route.params;
   console.log("postId in Comments", postId);
   const [comment, setComment] = useState("");
-  const [newComment, setNewComment] = useState("");
+  const [newComments, setNewComments] = useState(comments);
   const [isShowKeyboard, setIsShowKeyboard] = useState(false);
 
   const keyboardHide = () => {
@@ -37,17 +37,10 @@ const CommentsScreen = ({ route }) => {
   const submitComment = async () => {
     if (comment) {
       try {
-        const newComment = {
-          message: comment,
-          date: getCurrentDate(),
-        };
-
-        const postRef = doc(db, "postImages", postId);
-        const commentsCollectionRef = collection(postRef, "comments");
-
-        await addDoc(commentsCollectionRef, newComment);
+        const commentRef = doc(db, "post", id);
+        await updateDoc(commentRef, { comment: arrayUnion(comment) });
         console.log("Comment added successfully.");
-        setComment("");
+        setNewComments((prev) => [...prev, comment]);
       } catch (err) {
         console.log("Try again \n", err.message);
       }
