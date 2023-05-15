@@ -37,7 +37,7 @@ const CommentsScreen = ({ route }) => {
   const submitComment = async () => {
     if (comment) {
       try {
-        const commentRef = doc(db, "post", id);
+        const commentRef = doc(db, "post", postId);
         await updateDoc(commentRef, { comment: arrayUnion(comment) });
         console.log("Comment added successfully.");
         setNewComments((prev) => [...prev, comment]);
